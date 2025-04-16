@@ -1,0 +1,145 @@
+\documentclass{article}
+\usepackage{preamble}
+
+\begin{document}
+\header{Filemon Mateus}{CS 6140}{Document Similarity \& Hashing}{Homework \# 2}{\today}
+\begin{enumerate}[leftmargin={*}, font={\bf}, label={\arabic*.}, ref={\arabic*}]
+  \item \label{qst:1}
+    \begin{enumerate}[label={(\Alph*)}, ref={\theenumi(\Alph*)}]
+      \item \label{qst:1A}
+        Results from distinct $n$-Grams on each review:
+        \begin{table}[H]
+          \centering
+          \begin{tabular}{|ccccc|}
+            \hline
+            {\tt n-Grams} & {\tt D1} & {\tt D2} & {\tt D3} & {\tt D4} \\ \hline \hline
+            2-grams (char) & 333 & 461 & 401 & 154 \\ \hline
+            3-grams (char) & 933 & 1714 & 1428 & 256 \\ \hline
+            2-grams (word) & 330 & 875 & 571 & 54 \\ \hline
+          \end{tabular}
+          \caption{
+            Distinct $n$-Grams for each review. See \autoref{lst:build-ngrams} for \\
+            implementation details.
+          }
+          \label{tbl:build-ngram-table}
+        \end{table}
+        The results from \autoref{tbl:build-ngram-table} were obtained by creating a
+        {\tt CountVectorizer} object with the following parameters, then applying the
+        {\tt fit} and {\tt get\_feature\_names\_out} methods:
+
+        \begin{lstlisting}
+-- CountVectorizer(analyzer = 'char', ngram_range = (2,2))
+-- CountVectorizer(analyzer = 'char', ngram_range = (3,3))
+-- CountVectorizer(analyzer = 'word', ngram_range = (2,2))
+        \end{lstlisting}
+
+      \item \label{qst:1B}
+        A subroutine for generalized set similarity is implemented below:
+        \begin{lstlisting}[
+          label={lst:generalized-set-similarity-measure},
+          caption={Generalized set similarity measure.}
+        ]
+def generalized_set_similarity_measure(A, B, C, D, x, y, z, z_prime):
+    a = len(A.intersection(B))
+    b = len(A.union(B).union(C).union(D)) - len(A.union(B))
+    c = len(A.symmetric_difference(B))
+    d = x * a + y * b + z * c
+    e = x * a + y * b + z_prime * c
+    return d / e
+        \end{lstlisting}
+
+        \bigskip
+
+        Below are the Jaccard similarities corresponding to every pair:
+        \vspace{-5\parskip}
+
+        \begin{minipage}{\linewidth}
+          \begin{table}[H]
+            \centering
+            \begin{tabular}{|ccccccc|}
+              \hline
+              {\tt n-Grams} & {\tt JS(D1,D2)} & {\tt JS(D1,D3)} & {\tt JS(D1,D4)} & {\tt JS(D2,D3)} & {\tt JS(D2,D4)} & {\tt JS(D3,D4)} \\ \hline \hline
+              2-grams (char) & 0.59118 & 0.62031 & 0.40751 & 0.66409 & 0.30851 & 0.34709 \\ \hline
+              3-grams (char) & 0.32682 & 0.31021 & 0.17839 & 0.40080 & 0.11932 & 0.12567 \\ \hline
+              2-grams (word) & 0.01516 & 0.01923 & 0.00524 & 0.02263 & 0.00324 & 0.00160 \\ \hline
+            \end{tabular}
+            \caption{
+              Jaccard similarity on every document pair. See \autoref{lst:build-ngrams} \\
+              for implementation details.
+            }
+          \end{table}
+        \end{minipage}
+    \end{enumerate}
+
+  \item \label{qst:2}
+    \begin{enumerate}[label={(\Alph*)}, ref={\theenumi(\Alph*)}]
+      \item \label{qst:2A}
+        Results of the approximation of Jaccard similarity base on {\tt fast-min-hash}
+        algorithm:
+        \begin{table}[H]
+          \centering
+          \begin{tabular}{|cc|}
+            \hline
+            {\tt t} & {\tt $\sim$JS(D1,D2)} \\ \hline \hline
+            20 & 0.85000 \\ \hline
+            60 & 0.90000 \\ \hline
+            150 & 0.92000 \\ \hline
+            300 & 0.90000 \\ \hline
+            600 & 0.89833 \\ \hline
+          \end{tabular}
+          \caption{
+            Approximation of Jaccard similarity based on {\tt fast-min-hash} algorithm. \\
+            See \autoref{lst:fast-min-hash} for implementation details.
+          }
+        \end{table}
+
+      \item \label{qst:2B}
+        Benchmark results:
+        \begin{figure}[H]
+          \centering
+          \begin{tikzpicture}
+            \begin{axis}[
+              title={Benchmark Results for MinHash Algorithm},
+              xlabel={$t$-values},
+            ]
+              \addplot[
+                thin,
+                color=red
+              ] table[col sep=comma] {dev-dir/week2/data/error.csv};
+              \addlegendentry{Residual Error};
+              \addplot[
+                thin,
+                color=green
+              ] table[col sep=comma] {dev-dir/week2/data/times.csv};
+              \addlegendentry{Running Time};
+            \end{axis}
+          \end{tikzpicture}
+          \caption{
+            Benchmark results from {\tt fast-min-hash}. Plotted values correspond to \\
+            expectation on $100$ trials. See \autoref{lst:fast-min-hash} for implementation
+            details.
+          }
+          \label{fig:fast-min-hash-benchmark}
+        \end{figure}
+
+        From \autoref{fig:fast-min-hash-benchmark}, we see that $t \approx 35$ produces the
+        best approximation with the least runtime overhead. In general, a choice $t = 35$
+        would be appropriate if dealing with massively large text files. For the datasets
+        provided, however, choosing $t \in [300, 400]$ would be ideal as values past $t >
+        400$ results in diminishing improvements in accuracy while continuing to introduce
+        significant computational overhead to the running time.
+    \end{enumerate}
+\end{enumerate}
+
+\newpage
+
+\section*{Appendix}
+
+\lstinputlisting
+  [caption={\sf build-ngrams.py}, label={lst:build-ngrams}]
+  {dev-dir/week2/build-ngrams.py}
+
+\lstinputlisting
+  [caption={\sf fast-min-hash.py}, label={lst:fast-min-hash}]
+  {dev-dir/week2/fast-min-hash.py}
+\end{document}

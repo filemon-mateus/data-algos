@@ -1,0 +1,171 @@
+\documentclass{article}
+\usepackage{preamble}
+
+\begin{document}
+\header{Filemon Mateus}{CS 6140}{Regression}{Homework \# 6}{\today}
+\begin{enumerate}[leftmargin={*}, font={\bf}, label={\arabic*.}, ref={\arabic*}]
+  \item \label{qst:1}
+    \begin{enumerate}[label={(\Alph*)}, ref={\theenumi(\Alph*)}]
+      \item \label{qst:1A}
+        \begin{enumerate}[label={(\roman*)}, ref={\theenumii(\roman*)}]
+          \item
+            The following is the formula generated from the linear regressor model
+            from \autoref{lst:linreg}.
+            \begin{align*}
+              y = &+86.34x_{10} + 639.10x_9 + 147.19x_8 - 33.62x_7 + 213.10x_6 - 475.57x_5 \\
+                  &+293.68x_4 + 513.86x_3 - 248.85x_2 - 8.07x_1 + 152.06
+            \end{align*}
+          
+          \item
+            Below is the corresponding implementation:
+            \lstinputlisting
+              [caption={\sf linreg.py}, label={lst:linreg}]
+              {dev-dir/week6/linreg.py}
+        \end{enumerate}
+
+      \item \label{qst:1B}
+        \begin{enumerate}[label={(\roman*)}, ref={\theenumii(\roman*)}]
+          \item
+            The mean squared error across the training set is approximately {\bf
+            2850.26}.
+          
+          \item
+            The mean squared error across the testing set is approximately {\bf
+            2929.90}.
+            
+          \item
+            Because the test error is computed on an unknow dataset that the model
+            has not seen.
+            
+          \item
+            Below is the corresponding implementation:
+            \lstinputlisting
+              [caption={\sf linreg-mse.py}, label={lst:linreg-mse}]
+              {dev-dir/week6/linreg-mse.py}
+        \end{enumerate}
+
+      \item \label{qst:1C}
+        \begin{enumerate}[label={(\roman*)}, ref={\theenumii(\roman*)}]
+          \item
+            The following is the formula generated from the polynomial regressor
+            model from \autoref{lst:polyreg}.
+            \begin{align*}
+              y = &+709.24x_{66} − 1408.68x_{65} + 52113.48x_{64} + 3352.74x_{63} + 2680.27x_{62} + 14582.90x_{61} \\
+                  &-3184.94x_{60} - 161235.03x_{59} + 20538.04x_{58} - 14138.74x_{57} - 13063.50x_{56} - 374684.71x_{55} \\
+                  &+3038.02x_{54} - 85714.57x_{53} - 86908.47x_{52} + 14320.74x_{51} + 415280.33x_{50} - 25627.73x_{49} \\
+                  &+74622.62x_{48} + 178770.98x_{47} − 81807.58x_{46} - 3688.90x_{45} + 7004.13x_{44} - 278.10x_{43} \\
+                  &+6098.79x_{42} + 15406.29x_{41} - 15940.76x_{40} - 127.95x_{39} - 89.55x_{38} + 6865.90x_{37} \\
+                  &-4972.56x_{36} + 3886.12x_{35} + 15382.69x_{34} - 16388.40x_{33} + 1842.70x_{32} + 2192.86x_{31} \\
+                  &+663.52x_{30} - 3962.50x_{29} - 994.72x_{28} - 2201.34x_{27} - 10411.20x_{26} + 10610.84x_{25} \\
+                  &+2106.24x_{24} + 1982.70x_{23} - 1.50x_{22} + 547.49x_{21} + 7403.02x_{20} + 4663.99x_{19} \\
+                  &+10766.94x_{18} + 10944.90x_{17} - 17855.84x_{16} + 629.37x_{15} - 582.15x_{14} + 3402.24x_{13} \\
+                  &+2114.09x_{12} + 88.24x_{11} + 34633.80x_{10} + 40.56x_9 + 38357.87x_8 + 90595.51x_7 \\
+                  &-103220.46x_6 + 294.70x_5 + 365.65x_4 - 247.91x_3 + 41.48x_2 + 0.00x_1 - 313.90
+            \end{align*}
+            
+          \item
+            Below is the corresponding implementation.
+            \lstinputlisting
+              [caption={\sf polyreg.py}, label={lst:polyreg}]
+              {dev-dir/week6/polyreg.py}
+        \end{enumerate}
+        
+      \item \label{qst:1D}
+        \begin{enumerate}[label={(\roman*)}, ref={\theenumii(\roman*)}]
+          \item
+            The mean squared error across the training set is approximately {\bf
+            2325.51}.
+          
+          \item
+            The mean squared error across the testing set is approximately {\bf
+            3772.52}.
+            
+          \item
+            Compared to the canonical {\sf Linear Regressor} from \ref{qst:1B}, the
+            {\sf Polynomial Regressor} is catastrophically overfitting the training
+            observations and generalizing poorly on the test set.
+        \end{enumerate}
+        
+      \item \label{qst:1E}
+        \begin{enumerate}[label={(\roman*)}, ref={\theenumii(\roman*)}]
+          \item
+            Below is an implementation of {\sf Ridge Regression} for a singular value
+            of $\alpha$:
+            \lstinputlisting
+              [caption={\sf ridge.py}, label={lst:ridge}]
+              {dev-dir/week6/ridge.py}
+          
+          \item
+            Below is a plot with the regularization factor, $\alpha$, on the $x$-axis
+            ($\log$ scale) and the mean squared error (without regularization penalty)
+            on the $y$-axis. See \autoref{lst:ridge-mse} for a fuller explanation on
+            how this figure has been generated.
+            \begin{figure}[H]
+              \centering
+              \begin{tikzpicture}
+                \begin{semilogxaxis}[
+                  xlabel={$\alpha$-values},
+                  ylabel={Mean Squared Error}
+                ]
+                  \addplot[
+                    thick,
+                    red,
+                  ] table [col sep=comma] {dev-dir/week6/data/alpha-vs-error.csv};
+                  \addlegendentry{$E(w \mid (X_{\sf test}, Y_{\sf test}))$};
+                \end{semilogxaxis}
+              \end{tikzpicture}
+            \end{figure}
+        \end{enumerate}
+        
+      \item \label{qst:1F}
+        \begin{enumerate}[label={(\roman*)}, ref={\theenumii(\roman*)}]
+          \item
+            Below is a plot with the regularization factor, $\alpha$, on the $x$-axis
+            ($\log$ scale) and the mean test error across the five splits on the $y$-axis.
+            See \autoref{lst:ridge-kfold} for a fuller explanation on how this figure
+            has been generated.
+            \begin{figure}[H]
+              \centering
+              \begin{tikzpicture}
+                \begin{semilogxaxis}[
+                  xlabel={$\alpha$-values},
+                  ylabel={Average Error on $k$-Folds}
+                ]
+                  \addplot[
+                    thick,
+                    red
+                  ] table [col sep=comma] {dev-dir/week6/data/alpha-vs-error-kfold.csv};
+                  \addlegendentry{$E_{\sf avg}(w \mid (X_{\sf test}, Y_{\sf test}))$};
+                \end{semilogxaxis}
+              \end{tikzpicture}
+            \end{figure}
+          
+          \item
+            After tuning $\alpha$ via cross-validation, we should evaluate the model
+            on a separate test set that was not involved in training or hyperparameter
+            tuning. This yields a less biased estimate of how well the model performs
+            on unseen data.
+        \end{enumerate}
+    \end{enumerate}
+
+  \item \label{qst:2}
+    The matching pursuit algorithm that recovers the non-zero entries of the sparse
+    signal vector {\sf S} is shown below along with the required ordered list of the
+    entries and the residual vector norm after each step.
+    \lstinputlisting
+      [caption={\sf matching-pursuit.py}, label={lst:matching-pursuit}]
+      {dev-dir/week6/matching-pursuit.py}
+\end{enumerate}
+
+\newpage
+
+\section*{Appendix}
+
+\lstinputlisting
+  [caption={\sf ridge-mse.py}, label={lst:ridge-mse}]
+  {dev-dir/week6/ridge-mse.py}
+  
+\lstinputlisting
+  [caption={\sf ridge-kfold.py}, label={lst:ridge-kfold}]
+  {dev-dir/week6/ridge-kfold.py}
+\end{document}

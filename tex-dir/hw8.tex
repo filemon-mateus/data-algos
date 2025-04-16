@@ -1,0 +1,83 @@
+\documentclass{article}
+\usepackage{preamble}
+
+\begin{document}
+\header{Filemon Mateus}{CS 6140}{Graphs \& Page Rank}{Homework \# 8}{\today}
+\begin{enumerate}[leftmargin={*}, font={\bf}, label={\arabic*.}, ref={\arabic*}]
+  \item \label{qst:1}
+    \begin{enumerate}[label={(\Alph*)}, ref={\theenumi(\Alph*)}]
+      \item
+        Below is the implementation of a subroutine that for each node calculates
+        the number of edges leading away from it (``out links'').
+        \lstinputlisting
+          [caption={\sf out-links.py}, label={lst:out-links}]
+          {dev-dir/week8/out-links.py}
+
+      \item
+        Below is the implementation of a subroutine that fetches all the dead-end
+        nodes in the graph but does not report the IDs of nodes that are dead-end
+        nodes. There are in total {\bf 1235} in the graph.
+        \lstinputlisting
+          [caption={\sf dead-ends.py}, label={lst:dead-ends}]
+          {dev-dir/week8/dead-ends.py}
+          
+      \newpage
+
+      \item
+        From the implementation below, the node with original ID {\bf 486980} has
+        the highest {\sf PageRank} score.
+        \lstinputlisting
+          [caption={\sf pagerank-adj-mat.py}, label={lst:pagerank-adj-mat}]
+          {dev-dir/week8/pagerank-adj-mat.py}
+
+      \item
+        From \autoref{lst:pagerank-adj-mat}, a total of {\bf 155} nodes point to the
+        node with highest {\sf PageRank}. This is reasonable because it is the same
+        output obtained from the {\sf PageRank} subroutine from
+        \href{https://networkx.org/}{\url{NetworkX}} package.
+    \end{enumerate}
+    
+  \newpage
+
+  \item \label{qst:2}
+    Below are implementations of some of the ways for speeding-up {\sf PageRank}.
+
+    \begin{enumerate}[leftmargin={*}, label={\arabic*.}]
+      \item
+        Representing Transition Matrices.
+        \lstinputlisting
+          [caption={\sf pagerank-adj-lst.py}, label={lst:pagerank-adj-lst}]
+          {dev-dir/week8/pagerank-adj-lst.py}
+        Running \autoref{lst:pagerank-adj-lst} on the entire
+        \href{https://snap.stanford.edu/data/web-Google.html}{\url{web-Google.txt}}
+        dataset took {\bf 100} seconds. In contrast, \autoref{lst:pagerank-adj-mat}
+        failed to run due to the sheer size of the adjacency matrix totaling
+        $\SI{5}{\tera\byte}$ of disk space. This matrix representation is a performance
+        improvement as the space required is roughly linear in the number of non-zero
+        entries rather than quadratic in the size of the matrix.\footnote{
+          Solution outline weakly inspired from:
+          \href{
+            http://infolab.stanford.edu/~ullman/mmds/ch5.pdf
+          }{\url{http://infolab.stanford.edu/~ullman/mmds/ch5.pdf}}.
+        }
+
+      \item
+        Distributed Map Reduce on $n$ Stripes. \par
+        Below is \autoref{lst:pagerank-map-red}, a pseudo-implementation of
+        {\sf PageRank} with MapReduce. It took {\bf 200} seconds to process the entire
+        \href{https://snap.stanford.edu/data/web-Google.html}{\url{web-Google.txt}}
+        dataset. This drop in performance is attributed to its sequential nature. In it,
+        we observe a lack of concurrency where the {\tt map-reduce} function uses
+        {\tt starmap} and {\tt reduce} in a serial manner, without leveraging parallelism
+        or concurrency. In theory, since map-reduce is inherently parallelizable, running
+        the code on multiple cores or nodes in a distributed cluster would significantly
+        speed up computation and offer better performance.
+        
+        \newpage
+        
+        \lstinputlisting
+          [caption={\sf pagerank-map-red.py}, label={lst:pagerank-map-red}]
+          {dev-dir/week8/pagerank-map-red.py}
+    \end{enumerate}
+\end{enumerate}
+\end{document}

@@ -1,0 +1,71 @@
+\NeedsTeXFormat{LaTeX2e}[1994/06/01]
+\ProvidesPackage{preamble}[
+  2021/11/21
+  A highly customizable blueprint for typesetting homework assignments.
+  Provided by Filemon Mateus <mateus@utah.edu>.
+]
+% base packages
+\RequirePackage{amsmath}
+\RequirePackage{amssymb}
+\RequirePackage{caption}
+\RequirePackage[inline]{enumitem}
+\RequirePackage{fancyhdr}
+\RequirePackage{float}
+\RequirePackage{geometry}
+\RequirePackage{graphicx}
+\RequirePackage{hyperref}
+\RequirePackage{kpfonts-otf}
+\RequirePackage{bm}
+\RequirePackage{lastpage}
+\RequirePackage{xcolor}
+\RequirePackage{pgfplots}
+\RequirePackage{python}
+\RequirePackage{subcaption}
+\RequirePackage{siunitx}
+
+% useful settings
+\geometry{
+  margin={1in}
+}
+\setlist{
+  itemsep={20pt}
+}
+\lstset{
+  style=python,
+  captionpos=b
+}
+\captionsetup{
+  labelfont={bf},
+  labelsep={period},
+  justification={centering}
+}
+\hypersetup{
+  colorlinks={true},
+  linkcolor={red!50!black},
+  citecolor={green!50!black},
+  urlcolor={blue!80!black},
+}
+\pgfplotsset{
+  compat={newest},
+  width={0.5\linewidth},
+  grid={both},
+  tick pos={left},
+  tick align={outside},
+  legend pos={north west},
+  grid style={dotted},
+  title style={font=\bfseries},
+  ticklabel style={font=\footnotesize},
+}
+
+% custom header
+\newcommand{\header}[5]{
+  \pagestyle{fancy}
+  \lhead{#1}
+  \chead{#2~~\textemdash~~#3~~\textemdash~~#4}
+  \rhead{#5}
+  \cfoot{{\thepage}/{\pageref{LastPage}}}
+}
+
+% default to latin modern
+\renewcommand{\ttdefault}{lmtt}
+\renewcommand{\sfdefault}{lmss}

@@ -1,0 +1,195 @@
+\documentclass{article}
+\usepackage{preamble}
+
+\begin{document}
+\header{Filemon Mateus}{CS 6140}{Distances \& LSH}{Homework \# 3}{\today}
+\begin{enumerate}[leftmargin={*}, font={\bf}, label={\arabic*.}, ref={\arabic*}]
+  \item \label{qst:1}
+    \begin{enumerate}[label={(\Alph*)}, ref={\theenumi(\Alph*)}]
+      \item \label{qst:1A}
+        From Section $5.2$ in M4D, given a budget of $t$ hash functions and a threshold
+        $\tau$, the value of $r$ is approximately given by:
+        \[
+          r \approx -\log_{\tau}{(t)} = -\log_{.75}{(200)} \approx 19
+        \]
+        Furthermore, the number of hash functions $t$ is split into $r$ and $b$; therefore,
+        $b$---the number of rows within each band---is the ratio between $t$ and $r$, which
+        corresponds to:
+        \[
+          b = t/r = 200/19 \approx 11
+        \]
+        We can verify that these values yield a good separation around $\tau$ by plugging
+        them into $f(s) = 1 - (1-s^b)^r$ and check for an $S$-shaped curve with steepest
+        slope/rise at $\tau=0.75$.
+        \begin{figure}[H]
+          \centering
+          \begin{tikzpicture}
+            \begin{axis}[
+              xlabel={$\text{JS}(D_1, D_2)$},
+              ylabel={Probability of checking $d(D_1, D_2)$},
+              ymin={-0.1},
+              ymax={+1.1},
+            ]
+              \addplot[
+                thick,
+                color=red
+              ] table[col sep=comma, x index=0, y index=1] {dev-dir/week3/data/lsh-values.csv};
+              \addlegendentry{$f(s) = 1 - (1 - s^b)^r$};
+              \addplot[
+                thin,
+                dashed
+              ] coordinates { (0.75, -0.1) (0.75, 1.1) };
+              \addlegendentry{$\tau$-value = $0.75$};
+            \end{axis}
+          \end{tikzpicture}
+          \caption{
+            Probability that the distance $d(D_1, D_2)$ is checked in a LSH scheme with \\
+            $b=11$ bands with $r=19$ hashes each, as function of $s = \text{JS}(D_1, D_2)$.
+            See \autoref{lst:lsh-script}.
+          }
+          \label{fig:lsh-curve}
+        \end{figure}
+
+      \item \label{qst:1B}
+        The six numbers outlining the probability for each pair of the four objects being
+        estimated as similar can be retrieved as follows. First, we note that
+        \begin{gather*}
+          \text{JS}(A,B) = 0.77 \quad \text{JS}(A,C) = 0.25 \quad \text{JS}(A,D) = 0.33 \\
+          \text{JS}(B,C) = 0.20 \quad \text{JS}(B,D) = 0.55 \quad \text{JS}(C,D) = 0.91
+        \end{gather*}
+        and each one of these values correspond to $s$. Furthermore, for a threshold $\tau=
+        0.75$, we want $f(s)$ parameterized with $r=19$ and $b=11$. Hence plugging each $s$
+        into $f(s)$, we obtain the following results:
+        \begin{table}[H]
+          \centering
+          \begin{tabular}{|cccc|}
+            \hline
+            & {\tt B} & {\tt C} & {\tt D} \\ \hline \hline
+            {\tt A} & 0.66823 & 0.00000 & 0.00010 \\ \hline
+            {\tt B} & --- & 0.00000 & 0.02614 \\ \hline
+            {\tt C} & --- & --- & 0.99975 \\ \hline
+          \end{tabular}
+          \caption{
+            Probability that each pair of documents will have similarity $> \tau$.
+          }
+          \label{tbl:build-ngram-table}
+        \end{table}
+    \end{enumerate}
+
+  \item \label{qst:2}
+    \begin{enumerate}[label={(\Alph*)}, ref={\theenumi(\Alph*)}]
+      \item \label{qst:2A}
+        From Section $4.6.4$ in M4D, we construct a single random unit vector $\bm{x}
+        \in \mathbb{R}^{10}$ (chosen uniformily over the space of all unit vectors) as
+        follows:
+        \begin{enumerate*}[label={(\roman*)}, itemjoin={,~}, itemjoin*={,~and~}]
+          \item
+            sample $u_1, u_2 \overset{\mathrm{i.i.d.}}{\sim} \mathcal{U}(0,1)$
+          \item
+            define $1$-dimensional gaussian random variable $\mathcal{Y} = \sqrt{-2\ln(u_1)}\cos(2\pi u_2)$
+          \item
+            sample each $x_1, \ldots, x_{10} \overset{\mathrm{i.i.d.}}{\sim} \mathcal{Y}$
+          \item
+            scale $\bm{x}$ by the inverse of its norm to obtain the desired random unit
+            vector $\bar{\bm{x}} = \bm{x} / \|\bm{x}\|_2$.
+        \end{enumerate*}
+
+      \item \label{qst:2B}
+        The pairwise dot product CDF is illustrated below.
+        \begin{figure}[H]
+          \centering
+          \begin{tikzpicture}
+            \begin{axis}[
+              xlabel={Pairwise Dot Product},
+              ylabel={Likelihood of Occurrence},
+            ]
+              \addplot [
+                thick,
+                color=red,
+                hist={data=x, bins=1000, handler/.style={const plot}, cumulative, density}
+              ] file {dev-dir/week3/data/dot-products.csv};
+              \addlegendentry{CDF};
+            \end{axis}
+          \end{tikzpicture}
+          \caption{
+            Dot product for each pair of random unit vectors in $\mathbb{R}^{100}$.
+            See \autoref{lst:gen-unit-vec}.
+          }
+          \label{fig:dot-products-cdf-plot}
+        \end{figure}
+    \end{enumerate}
+
+  \item \label{qst:3}
+    \begin{enumerate}[label={(\Alph*)}, ref={\theenumi(\Alph*)}]
+      \item \label{qst:3A}
+        The pairwise angular similarity CDF is illustrated below. The number of similarities
+        that exceed $\tau=0.75$ is {\bf 107004}.
+        \begin{figure}[H]
+          \centering
+          \begin{tikzpicture}
+            \begin{axis}[
+              xlabel={Pairwise Angular Similarity},
+              ylabel={Likelihood of Occurrence},
+            ]
+              \addplot [
+                thick,
+                color=red,
+                hist={data=x, bins=1000, handler/.style={const plot}, cumulative, density}
+              ] file {dev-dir/week3/data/angular-sims-r-dataset.csv};
+              \addlegendentry{CDF};
+            \end{axis}
+          \end{tikzpicture}
+          \caption{
+            Angular similarities of pairwise unit vectors from {\tt R.txt} dataset. See
+            \autoref{lst:angular-sim}.
+          }
+          \label{fig:angular-sim-r-dataset-cdf-plot}
+        \end{figure}
+
+      \item \label{qst:3B}
+        The pairwise angular similarity CDF is illustrated below. The number of similarities
+        that exceed $\tau=0.75$ is {\bf 0}.
+        \begin{figure}[H]
+          \centering
+          \begin{tikzpicture}
+            \begin{axis}[
+              xlabel={Pairwise Angular Similarity},
+              ylabel={Likelihood of Occurrence},
+            ]
+              \addplot [
+                thick,
+                color=red,
+                hist={data=x, bins=1000, handler/.style={const plot}, cumulative, density}
+              ] file {dev-dir/week3/data/angular-sims.csv};
+              \addlegendentry{CDF};
+            \end{axis}
+          \end{tikzpicture}
+          \caption{
+            Angular similarities for each pair of random unit vectors in $\mathbb{R}^{100}$.
+            See \autoref{lst:gen-unit-vec}.
+          }
+          \label{fig:angular-sim-cdf-plot}
+        \end{figure}
+    \end{enumerate}
+\end{enumerate}
+
+\newpage
+
+\section*{Appendix}
+
+\lstinputlisting
+  [caption={\sf lsh-script.py}, label={lst:lsh-script}]
+  {dev-dir/week3/lsh-script.py}
+  
+\newpage
+
+\lstinputlisting
+  [caption={\sf gen-unit-vec.py}, label={lst:gen-unit-vec}]
+  {dev-dir/week3/gen-unit-vec.py}
+  
+\newpage
+
+\lstinputlisting
+  [caption={\sf angular-sim.py}, label={lst:angular-sim}]
+  {dev-dir/week3/angular-sim.py}
+\end{document}

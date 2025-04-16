@@ -1,0 +1,187 @@
+\documentclass{article}
+\usepackage{preamble}
+
+\begin{document}
+\header{Filemon Mateus}{CS 6140}{Frequent Items}{Homework \#\ 5}{\today}
+\begin{enumerate}[leftmargin={*}, font={\bf}, label={\arabic*.}, ref={\arabic*}]
+  \item \label{qst:1}
+    \begin{enumerate}[label={(\Alph*)}, ref={\theenumi(\Alph*)}]
+      \item \label{qst:1A}
+        Below is the output of running a fully fledge vanilla implementation of
+        {\sf Misra Gries} on {\sf S1.txt}:
+        \begin{table}[H]
+          \centering
+          \begin{tabular}{|l|c|c|c|c|c|c|c|c|c|c|c|}
+            \hline
+            {\sf\bfseries label} & {\sf ``a''} & {\sf ``b''} & {\sf ``p''} & {\sf ``d''} & {\sf ``s''} & {\sf ``f''} & {\sf ``c''} & {\sf ``v''} & {\sf ``k''} & {\sf ``t''} & {\sf ``n''} \\ \hline
+            {\sf\bfseries count} & 772,865 & 472,863 & 2 & 1 & 1 & 1 & 233,850 & 2 & 1 & 1 & 1 \\ \hline
+            {\sf\bfseries ratio} & 0.25762 & 0.15762 & 0.0 & 0.0 & 0.0 & 0.0 & 0.07795 & 0.0 & 0.0 & 0.0 & 0.0 \\ \hline
+          \end{tabular}
+          \caption{
+            Output of {\sf Misra Gries} algorithm on stream {\sf S1}. See
+            \autoref{lst:fast-misra-gries} for a fuller \\ explanation on
+            how these frequencies have been generated.
+          }
+          \label{tbl:misra-gries-table-s1}
+        \end{table}
+
+        Below is the output of running a fully fledge vanilla implementation of
+        {\sf Misra Gries} on {\sf S2.txt}:
+        \begin{table}[H]
+          \centering
+          \begin{tabular}{|l|c|c|c|c|c|c|c|c|c|c|c|}
+            \hline
+            {\sf\bfseries label} & {\sf ``t''} & {\sf ``b''} & {\sf ``a''} & {\sf ``h''} & {\sf ``j''} & {\sf ``s''} & {\sf ``c''} & {\sf ``u''} & {\sf ``f''} & {\sf ``i''} & {\sf ``o''} \\ \hline
+            {\sf\bfseries count} & 0 & 710,525 & 1,911,225 & 0 & 0 & 0 & 311,750 & 0 & 0 & 0 & 0 \\ \hline
+            {\sf\bfseries ratio} & 0.0 & 0.17763 & 0.47781 & 0.0 & 0.0 & 0.0 & 0.07794 & 0.0 & 0.0 & 0.0 & 0.0 \\ \hline
+          \end{tabular}
+          \caption{
+            Output of {\sf Misra Gries} algorithm on stream {\sf S2}. See
+            \autoref{lst:fast-misra-gries} for fuller \\ explanation on how
+            these frequencies have been generated.
+          }
+          \label{tbl:misra-gries-table-s2}
+        \end{table}
+
+        {\bf\sffamily --- Elements that ``might'' occur at least 25\% of the time} \par
+
+        We note that for a fix entry, say $q$, in the stream, the following
+        inequality holds between the ground-truth frequency $f_q$ and the
+        estimated frequency $\hat{f}_q$:
+        \[
+          f_q - \frac{m}{k} \leq \hat{f}_q
+        \]
+        Choose $m=3,000,000$, $k=12$, and $f_q = 1/4 \times 3,000,000 = 750,000$
+        to obtain that $\hat{f}_q \geq 500,000$. The task now reduces to finding
+        all elements $q$ of the stream whose estimated frequency (corresponding
+        to the count entries from \autoref{tbl:misra-gries-table-s1}) is greater
+        or equal to $500,000$. The only element that satisfies this constraint
+        on its estimated frequency is item: {\sf ``a''}. \\
+
+        Similarly, for \autoref{tbl:misra-gries-table-s2}, choose $m=4,000,000$,
+        $k=12$, and $f_q = 1/4 \times 4,000,000 = 1,000,000$ to obtain that
+        $\hat{f}_q \geq 666,666.\bar{6}$. From \autoref{tbl:misra-gries-table-s2},
+        the only elements satisfying this constraint are items {\sf ``a''} and
+        {\sf ``b''}. \\
+
+        {\bf\sffamily --- Elements that ``must'' occur at least 25\% of the time} \par
+        
+        Elements of {\sf S1} that are guaranteed to occur at least 25\% times must
+        satisfy the following constraint:
+        \[
+          \hat{f}_q \geq f_q = 1/4 \times 3,000,000 = 750,000
+        \]
+        From \autoref{tbl:misra-gries-table-s1}, the only item that exceeds such
+        frequency is item {\sf ``a''}. \\
+        
+        Similarly, the elements of {\sf S2} that must occur at least 25\% of the
+        time must satisfy the following constraint:
+        \[
+          \hat{f}_q \geq f_q = 1/4 \times 4,000,000 = 1,000,000
+        \]
+
+        From \autoref{tbl:misra-gries-table-s2}, the only item that exceeds such
+        frequency is item {\sf ``a''}.
+
+      \item \label{qst:1B}
+        Below is the output of running a fully fledge vanilla implementation of
+        {\sf Count Min Sketch} on {\sf S1.txt}:
+        \begin{table}[H]
+          \centering
+          \begin{tabular}{|l|c|c|c|}
+            \hline
+            {\sf\bfseries label} & {\sf ``a''} & {\sf ``b''} & {\sf ``c''} \\ \hline
+            {\sf\bfseries count} & 899,566 & 659,805 & 360,551 \\ \hline
+            {\sf\bfseries ratio} & 0.29986 & 0.21993 & 0.12018 \\ \hline
+          \end{tabular}
+          \caption{
+            Output of {\sf Count Min Sketch} algorithm on stream {\sf S1}. See
+            \autoref{lst:count-min-sketch} for a fuller \\ explanation on how
+            these frequencies have been generated.
+          }
+          \label{tbl:count-min-sketch-s1}
+        \end{table}
+
+        Below is the output of running a fully fledge vanilla implementation of
+        {\sf Count Min Sketch} on {\sf S2.txt}:
+        \begin{table}[H]
+          \centering
+          \begin{tabular}{|l|c|c|c|}
+            \hline
+            {\sf\bfseries label} & {\sf ``a''} & {\sf ``b''} & {\sf ``c''} \\ \hline
+            {\sf\bfseries count} & 2,000,100 & 839,401 & 400,625 \\ \hline
+            {\sf\bfseries ratio} & 0.50003 & 0.20985 & 0.10016 \\ \hline
+          \end{tabular}
+          \caption{
+            Output of {\sf Count Min Sketch} algorithm on stream {\sf S2}. See
+            \autoref{lst:count-min-sketch} for a fuller \\ explanation on how
+            these frequencies have been generated.
+          }
+          \label{tbl:count-min-sketch-s2}
+        \end{table}
+
+        {\bf\sffamily --- Elements that ``might'' occur at least 25\% of the time} \par
+        
+        From Section 11.2.3 in M4D, irrespective of the randomness incurred by the hash
+        functions, the following invariance overestimate always holds:
+        \[
+          \hat{f}_q \geq f_q
+        \]
+        Therefore, for stream {\sf S1},  we want to enforce $\hat{f}_q \geq 1/4 \times
+        3,000,000 = 750,000$ for items that ``might'' occur at least 25\% of the time.
+        From \autoref{tbl:count-min-sketch-s1}, the only item satisfying this constraint
+        is item {\sf ``a''}. \\
+
+        Likewise, for stream {\sf S2} we want to enforce $\hat{f}_q \geq 1/4 \times
+        4,000,000 = 1,000,000$ for items that ``might'' occur at least 25\% of the time.
+        From \autoref{tbl:count-min-sketch-s2}, the only item satisfying this constraint
+        is item {\sf ``a''}. \\
+
+        {\bf\sffamily --- Elements that ``must'' occur at least 25\% of the time} \par
+        
+        Elements of {\sf S1} that are guaranteed to occur at least 25\% of the time
+        must satisfy the following constraint:
+        \[
+          \hat{f}_q > f_q + \varepsilon F_1
+        \]
+        Choose $\varepsilon = 2/k = 1/6$ to obtain for stream {\sf S1} that $\hat{f}_q
+        > 1,250,000$. Inspecting the values from \autoref{tbl:count-min-sketch-s1},
+        item {\sf ``a''} is the only item satisfying this constraint. \\
+        
+        Analagously, for the same fixed choice of $\varepsilon = 1/6$, in stream {\sf
+        S2} we obtain $\hat{f}_q > 1,666,666.6\bar{6}$. Item {\sf ``a''} is the only
+        item satisfying this constraint with an estimated frequency of $2,000,100$.
+        
+      \item \label{qst:1C}
+        {\sf Misra Gries} -- use a hash map with keys representing labels/words and
+        values representing their corresponding indices in the counter. \\
+
+        {\sf Count Min Sketch} -- compute each hashed word by summing up the {\sf ascii}
+        values of its constituent characters and then use modular hashing. To circumvent
+        the problem of having anagrams being hashed to the same location, multiply the
+        {\sf ascii} values of the characters by the position their appear in the word.
+
+      \item \label{qst:1D}
+        While the space for the {\sf Count-Min Sketch} is larger than the {\sf Misra-Gries
+        Sketch}, it has an advantage that its guarantees hold under the so-called turnstyle
+        streaming model. Under this model, each element $a_i \in A$ can either add one or
+        subtract one from corpus, but each count $f_j$ must remain non-negative. Thus {\sf 
+        Count-Min} has the same guarantees in the turnstile model, but {\sf Misra-Gries}
+        does not.
+    \end{enumerate}
+\end{enumerate}
+
+\newpage
+
+\section*{Appendix}
+
+\lstinputlisting
+  [caption={\sf fast-misra-gries.py}, label={lst:fast-misra-gries}]
+  {dev-dir/week5/fast-misra-gries.py}
+  
+\newpage
+
+\lstinputlisting
+  [caption={\sf count-min-sketch.py}, label={lst:count-min-sketch}]
+  {dev-dir/week5/count-min-sketch.py}
+\end{document}

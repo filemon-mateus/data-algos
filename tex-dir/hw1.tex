@@ -1,0 +1,221 @@
+\documentclass{article}
+\usepackage{preamble}
+
+\begin{document}
+\header{Filemon Mateus}{CS 6140}{Statistical Principles}{Homework \# 1}{\today}
+\begin{enumerate}[leftmargin={*}, font={\bf}, label={\arabic*.}, ref={\arabic*}]
+  \item \label{qst:1}
+    \begin{enumerate}[label={(\Alph*)}, ref={\theenumi(\Alph*)}]
+      \item \label{qst:1A}
+        For a domain of size $10000$ a collision occurs in $120$ trials.
+
+      \item \label{qst:1B}
+        The cumulative plot for fixed choices of $n = 10000$ and $m = 500$ resembles the
+        following monotonic behavior:
+        \begin{figure}[H]
+          \centering
+          \begin{tikzpicture}
+            \begin{axis}[
+              title={Cumulative Density Plot},
+              xlabel={Number of Trials ($k$)},
+              ylabel={Pr[Collision Occurs in $k$ or Fewer Trials]},
+              scaled ticks={false},
+              yticklabel style={
+                /pgf/number format/fixed,
+                /pgf/number format/zerofill,
+                /pgf/number format/precision=1,
+              }
+            ]
+              \addplot [
+                thick,
+                color=red,
+                hist={data=x, bins=1000, handler/.style={const plot}, cumulative, density}
+              ] file {dev-dir/week1/data/bp-data/trials.csv};
+              \addlegendentry{Empirical CDF};
+            \end{axis}
+          \end{tikzpicture}
+        \end{figure}
+
+      \item \label{qst:1C}
+        For fixed values of $n = 10000$ and $m = 500$ the expected number of trials is
+        $122.078$.
+
+      \item \label{qst:1D}
+        Please refer to \autoref{lst:birthday-paradox} for implementation details. A run
+        with $n = 10000$ and $m = 500$ took roughly $0.00066$ seconds.
+
+        \begin{figure}[H]
+          \centering
+          \begin{tikzpicture}
+            \begin{axis}[
+              title={Running Time Benchmark (Parallelized with Numba)},
+              xlabel={Domain Size $[n]$},
+              ylabel={Elapsed Time (in seconds)},
+              cycle list={red, blue, cyan, green, magenta},
+              scaled ticks={false},
+              yticklabel style={
+                /pgf/number format/fixed,
+                /pgf/number format/zerofill,
+                /pgf/number format/precision=1,
+              }
+            ]
+              \pgfplotsinvokeforeach{500, 2875, ..., 10000}{
+                \addplot+[
+                  thick
+                ] table[col sep=comma, x=n, y=t, restrict expr to domain={\thisrow{m}}{#1:#1}] {dev-dir/week1/data/bp-data/bench.csv};
+                \addlegendentry{$m=#1$};
+              }
+            \end{axis}
+          \end{tikzpicture}
+        \end{figure}
+    \end{enumerate}
+
+  \item \label{qst:2}
+    \begin{enumerate}[label={(\Alph*)}, ref={\theenumi(\Alph*)}]
+      \item \label{qst:2A}
+        For a domain of size $1000$ all entries $i \in [1000]$ are exhausted in $7510$
+        trials.
+
+      \item \label{qst:2B}
+        The cumulative plot for fixed choices of $n = 1000$ and $m = 500$ resembles the
+        following monotonicity:
+        \begin{figure}[H]
+          \centering
+          \begin{tikzpicture}
+            \begin{axis}[
+              title={Cumulative Density Plot},
+              xlabel={Number of Trials ($k$)},
+              ylabel={Pr[Domain $[n]$ is Exhausted in $k$ or Fewer Trials]},
+              scaled ticks={false},
+              yticklabel style={
+                /pgf/number format/fixed,
+                /pgf/number format/zerofill,
+                /pgf/number format/precision=1,
+              }
+            ]
+              \addplot [
+                thick,
+                color=red,
+                hist={data=x, bins=1000, handler/.style={const plot}, cumulative, density}
+              ] file {dev-dir/week1/data/cc-data/trials.csv};
+              \addlegendentry{Empirical CDF};
+            \end{axis}
+          \end{tikzpicture}
+        \end{figure}
+
+      \item \label{qst:2C}
+        For fixed values of $n = 1000$ and $m = 500$ the expected number of trials is
+        $7649.81$.
+
+      \item \label{qst:2D}
+        Please refer to \autoref{lst:coupon-collector} for implementation details. A run
+        with $n = 1000$ and $m = 500$ took approximately $0.0048$ seconds.
+        \begin{figure}[H]
+          \centering
+          \begin{tikzpicture}
+            \begin{axis}[
+              title={Running Time Benchmark (Parallelized with Numba)},
+              xlabel={Domain Size $[n]$},
+              ylabel={Elapsed Time (in seconds)},
+              cycle list={red, blue, cyan, green, magenta},
+              scaled ticks={false},
+              yticklabel style={
+                /pgf/number format/fixed,
+                /pgf/number format/zerofill,
+                /pgf/number format/precision=1,
+              }
+            ]
+              \pgfplotsinvokeforeach{500, 1625, ..., 5000}{
+                \addplot+[
+                  thick
+                ] table[col sep=comma, x=n, y=t, restrict expr to domain={\thisrow{m}}{#1:#1}] {dev-dir/week1/data/cc-data/bench.csv};
+                \addlegendentry{$m=#1$};
+              }
+            \end{axis}
+          \end{tikzpicture}
+        \end{figure}
+    \end{enumerate}
+
+  \item \label{qst:3}
+    \begin{enumerate}[label={(\Alph*)}]
+      \item \label{qst:3A}
+        Following a similar strategic design to that of the Birthday Paradox problem from
+        Lecture 2, we choose $n = 10000$ to find:
+        \begin{align*}
+          1 - (1 - 1/n)^{\frac{k (k - 1)}{2}} = 1 - (1 - 1/10000)^{\frac{k (k - 1)}{2}}
+          = 1 - 0.9999^{\frac{k (k - 1)}{2}} &\geq 0.5 \\
+          0.9999^{\frac{k (k - 1)}{2}} &\leq 0.5 \\
+          \frac{k (k - 1)}{2} &\leq \frac{\ln{(0.5)}}{\ln{(0.9999)}} \\
+          k^2 - k - \frac{2 \ln{(0.5)}}{\ln(0.9999)} &\leq 0
+        \end{align*}
+        Solving for $k > 0$, we find that $k = 119$, which is a numerical quantity that doesn't
+        deviate too much from the experimental result obtained from part \ref{qst:1C}.
+
+      \item \label{qst:3B}
+        Let $X$ denote the number of trials needed to exhaust all entries in $[n]$. Then
+        following a similar probabilistic analysis to the Coupon Collectors problem discussed
+        in class, we set $n$ to $1000$ to obtain (in expectation):
+        \[
+          \mathbb{E}[X] = n \sum_{i=1}^{n} \frac{1}{i} = 1000 \sum_{i=1}^{1000} \frac{1}{i} = 7485.48.
+        \]
+        This result deviates only by a small margin from the experimental result from \ref{qst:2C}.
+    \end{enumerate}
+
+  \item \label{qst:4}
+    Let $f_i$ denote the number of trials that have value $i$. We can write $f_i$ as the
+    sum of indicator random variables $X_1 + X_2 + \cdots + X_k$, where
+    \[
+      X_i = 
+        \begin{cases}
+          1 & \text{if trial}\ j\ \text{lands at entry}\ i \\
+          0 & \text{otherwise}.
+        \end{cases}
+    \]
+    Since by the \emph{union bound}, for every $\varepsilon \geq 0$ we have
+    \begin{align*}
+      \Pr\left[\left|\mu - \frac{1}{n}\right| \geq \varepsilon\right]
+      &= 1 - \Pr\left[\left|\mu - \frac{1}{n}\right| < \varepsilon\right] \\
+      &= 1 - \Pr\left[\left|\frac{f_1}{k} - \frac{1}{n}\right| < \varepsilon, \ldots, \left|\frac{f_n}{k} - \frac{1}{n}\right| < \varepsilon\right] \\
+      &\leq 1 - \left[1 - \sum_{i=1}^{n} \left(1 - \Pr\left[\left|\frac{f_i}{k} - \frac{1}{n}\right| < \varepsilon \right]\right)\right] \\
+      &= \sum_{i=1}^{n} 1 - \Pr\left[\left|\frac{f_i}{k} - \frac{1}{n}\right| < \varepsilon \right] \\
+      &= \sum_{i=1}^{n} \Pr\left[\left|\frac{f_i}{k} - \frac{1}{n}\right| \geq \varepsilon \right]
+    \end{align*}
+    in order to estimate a sufficiently large $k$ that allows for all counts to be within
+    $(\varepsilon \cdot 100)\%$ of the average with probability $0.05$, it suffices to note
+    that
+    \[
+      0 \leq X_i \leq 1 \quad \text{and} \quad
+      \frac{f_i}{k} = \frac{1}{k}\sum_{i=1}^k X_i = \bar{X} \quad \text{and} \quad
+      \mathbb{E}[X_i] = \Pr[X_i = 1] = \frac{1}{n}
+    \]
+    Invoking \emph{Chernoff-Hoeffding Inequality} with $\Delta = 1$
+    \[
+      \Pr\left[\left|\frac{f_i}{k} - \frac{1}{n}\right| \geq \varepsilon \right] =
+      \Pr\left[\left|\bar{X} - \mathbb{E}[X_i] \right| \geq \varepsilon \right] \leq
+      2\exp\left(\frac{-2 \varepsilon^{2} k}{1^2}\right)
+    \]
+    We want a $k$ that holds
+    \[
+      \Pr\left[\left|\mu - \frac{1}{n}\right| \geq \varepsilon\right] \leq \sum_{i=1}^n 2\exp\left(-2\varepsilon^{2}k \right) \leq 0.05
+    \]
+    Solving for $k$ we obtain that $k \geq \dfrac{1}{\varepsilon^2} \ln\left(2\sqrt{10n}\right)$. \medskip
+
+    To obtain $0.005$ probability of exceeding $\varepsilon$ error, we solve the same equation
+    with an upperbound of $0.005$ (instead of $0.05$) to obtain $k \geq \dfrac{1}{\varepsilon^2}
+    \ln \left(20\sqrt{n}\right)$. \hfill $\square$
+  \end{enumerate}
+  
+  \newpage
+
+  \section*{Appendix}
+  
+  \lstinputlisting
+    [caption={\sf birthday-paradox.py}, label={lst:birthday-paradox}]
+    {dev-dir/week1/birthday-paradox.py}
+    
+  \newpage
+
+  \lstinputlisting
+    [caption={\sf coupon-collector.py}, label={lst:coupon-collector}]
+    {dev-dir/week1/coupon-collector.py}
+\end{document}

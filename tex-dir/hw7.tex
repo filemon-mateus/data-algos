@@ -1,0 +1,210 @@
+\documentclass{article}
+\usepackage{preamble}
+
+\begin{document}
+\header{Filemon Mateus}{CS 6140}{Dimensionality Reduction}{Homework \# 7}{\today}
+\begin{enumerate}[leftmargin={*}, font={\bf}, label={\arabic*.}, ref={\arabic*}]
+  \item \label{qst:1}
+    \begin{enumerate}[label={(\roman*)}, ref={\theenumi(\roman*)}]
+      \item \label{qst:1i}
+        The following is a scatter plot consisting of $186$ data points along with
+        two principal directions.
+        \begin{figure}[H]
+          \centering
+          \begin{tikzpicture}
+            \begin{axis}[
+              xlabel={Child Mortality},
+              ylabel={Women Fertility},
+              clip marker paths={true}
+            ]
+              \addplot[blue, only marks, mark size=1pt] table[col sep=comma] {dev-dir/week7/data/mortality-vs-fertility.csv};
+              \addplot[-stealth, line width=2pt, red] coordinates {(0, 0) (-0.93713505 * 3, -0.37473738 * 3)};
+              \addplot[-stealth, line width=2pt, green!60!black] coordinates {(0, 0) (0.37473738 * 1, -0.93713505 * 1)};
+            \end{axis}
+          \end{tikzpicture}
+          \caption{
+            Women fertility as a function of neonatal child mortality.
+          }
+          \label{fig:mortality-vs-fertility}
+        \end{figure}
+        Based on \autoref{fig:mortality-vs-fertility}, the direction captured by
+        the vector in green (along the coordinates $\left[0.3747, -0.9271\right]$)
+        carries the maximal amount of variance across the $186$ observations, and
+        thus, it encodes more information to that of the vector/direction in red.
+        It is therefore reasonable to conclude that the direction of the vector in
+        green is more important.
+        
+      \item \label{qst:1ii}
+        The following is an approximation of the mortality/fertility dataset with
+        the best Rank-$1$ approximation.
+        \begin{figure}[H]
+          \centering
+          \begin{tikzpicture}
+            \begin{axis}[
+              xlabel={Child Mortality},
+              ylabel={Women Fertility},
+              clip marker paths={true}
+            ]
+              \addplot[blue, only marks, mark size=1pt] table[col sep=comma] {dev-dir/week7/data/mortality-vs-fertility.csv};
+              \addlegendentry{Ground Truth Observations};
+              \addplot[red, only marks, mark size=1pt] table[col sep=comma] {dev-dir/week7/data/mortality-vs-fertility-rank-1-approx.csv};
+              \addlegendentry{Best Rank-$1$ Approximation};
+            \end{axis}
+          \end{tikzpicture}
+          \caption{
+            Women fertility as a function of neonatal child mortality. \\
+            Best Rank-$1$ approximation.
+          }
+        \end{figure}
+    \end{enumerate}
+
+  \item \label{qst:2}
+    \begin{enumerate}[label={(\Alph*)}, ref={\theenumi(\Alph*)}]
+      \item \label{qst:2A}
+        \begin{enumerate}[label={(\roman*)}, ref={\theenumii(\roman*)}]
+          \item
+            Below is a plot with $\varepsilon$ on the $x$-axis and the mean absolute
+            differences on the $y$-axis corresponding to the gaussian random projection
+            subroutine.
+            \begin{figure}[H]
+              \centering
+              \begin{tikzpicture}
+                \begin{axis}[
+                  xlabel={$\varepsilon$-values},
+                  ylabel={Mean Absolute Difference},
+                  scaled ticks={false},
+                  yticklabel style={
+                    /pgf/number format/fixed,
+                    /pgf/number format/zerofill,
+                    /pgf/number format/precision=2
+                  },
+                ]
+                  \addplot[
+                    blue,
+                    thick,
+                    mark=*
+                  ] table[col sep=comma] {dev-dir/week7/data/gauss-proj-eps-vs-mean-abs-diff.csv};
+                \end{axis}
+              \end{tikzpicture}
+              \caption{
+                Mean absolute difference of gaussian random projection.
+              }
+            \end{figure}
+            
+          \item
+            Below is a histogram corresponding to the absolute differences.
+            \begin{figure}[H]
+              \centering
+              \begin{tikzpicture}
+                \begin{axis}[
+                  xlabel={Absolute Difference},
+                  ylabel={Frequency},
+                  scaled ticks={false},
+                  xticklabel style={
+                    /pgf/number format/fixed,
+                    /pgf/number format/zerofill,
+                    /pgf/number format/precision=2
+                  },
+                  yticklabel style={
+                    /pgf/number format/fixed
+                  },
+                  ymin={0}
+                ]
+                  \addplot [
+                    fill={blue},
+                    draw={black},
+                    hist={data=x, bins=10}
+                  ] file {dev-dir/week7/data/gauss-proj-abs-diff.csv};
+                \end{axis}
+              \end{tikzpicture}
+              \caption{
+                Histogram of absolute differences of gaussian random projection.
+              }
+            \end{figure}
+            
+          \item
+            Yes, from mean absolute difference plot and absolute differences histogram,
+            we see that pairwise distances are nearly preserved.
+
+          \item
+            Below is the implementation:
+            \lstinputlisting
+              [caption={\sf gauss-rand-proj.py}, label={lst:gauss-rand-proj}]
+              {dev-dir/week7/gauss-rand-proj.py}
+        \end{enumerate}
+        
+      \item \label{qst:2B}
+        \begin{enumerate}[label={(\roman*)}, ref={\theenumii(\roman*)}]
+          \item
+            Below is a plot with $\varepsilon$ on the $x$-axis and the mean absolute
+            differences on the $y$-axis corresponding to the sparse random projection
+            subroutine.
+            \begin{figure}[H]
+              \centering
+              \begin{tikzpicture}
+                \begin{axis}[
+                  xlabel={$\varepsilon$-values},
+                  ylabel={Mean Absolute Difference},
+                  scaled ticks={false},
+                  yticklabel style={
+                    /pgf/number format/fixed,
+                    /pgf/number format/zerofill,
+                    /pgf/number format/precision=2
+                  },
+                ]
+                  \addplot[
+                    thick,
+                    blue,
+                    mark=*
+                  ] table[col sep=comma] {dev-dir/week7/data/sparse-proj-eps-vs-mean-abs-diff.csv};
+                \end{axis}
+              \end{tikzpicture}
+              \caption{
+                Mean absolute difference of sparse random projection.
+              }
+            \end{figure}
+             
+          \item
+            Below is a histogram corresponding to the absolute differences.
+            \begin{figure}[H]
+              \centering
+              \begin{tikzpicture}
+                \begin{axis}[
+                  xlabel={Absolute Difference},
+                  ylabel={Frequency},
+                  scaled ticks={false},
+                  xticklabel style={
+                    /pgf/number format/fixed,
+                    /pgf/number format/zerofill,
+                    /pgf/number format/precision=2
+                  },
+                  yticklabel style={
+                    /pgf/number format/fixed
+                  },
+                  ymin={0}
+                ]
+                  \addplot [
+                    fill={blue},
+                    draw={black},
+                    hist={data=x, bins=10}
+                  ] file {dev-dir/week7/data/sparse-proj-abs-diff.csv};
+                \end{axis}
+              \end{tikzpicture}
+              \caption{
+                Histogram of absolute differences of sparse random projection.
+              }
+            \end{figure}
+            
+          \item
+            Yes, from the mean absolute difference plot and absolute differences histogram,
+            we see that pairwise distances are nearly preserved.
+            
+          \item
+            Below is the implementation:
+            \lstinputlisting
+              [caption={\sf sparse-rand-proj.py}, label={lst:sparse-rand-proj}]
+              {dev-dir/week7/sparse-rand-proj.py}
+        \end{enumerate}
+    \end{enumerate}
+\end{enumerate}
+\end{document}

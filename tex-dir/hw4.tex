@@ -1,0 +1,438 @@
+\documentclass{article}
+\usepackage{preamble}
+
+\definecolor{cluster1}{RGB}{141,211,199}
+\definecolor{cluster2}{RGB}{255,255,179}
+\definecolor{cluster3}{RGB}{190,186,218}
+\definecolor{cluster4}{RGB}{251,128,114}
+
+\begin{document}
+\header{Filemon Mateus}{CS 6140}{Clustering}{Homework \# 4}{\today}
+\begin{enumerate}[leftmargin={*}, font={\bf}, label={\arabic*.}, ref={\arabic*}]
+  \item \label{qst:1}
+    \begin{enumerate}[label={(\Alph*)}, ref={\theenumi(\Alph*)}]
+      \item \label{qst:1A}
+        Below is a tabulated list of sets corresponding to the resulting clusters of
+        running a fully-fledge vanilla implementation of {\sf Agglomerative Clustering}
+        on {\sf C1.txt} dataset.
+        \begin{table}[H]
+          \centering
+          \begin{tabular}{|l|c|c|c|}
+            \hline
+            & {\bf Cluster 1} & {\bf Cluster 2} & {\bf Cluster 3} \\ \hline
+            {\bf Single-Link} & $\{1,2\}$ & $\{3,4\}$ & $\{5 \cdots 21\}$ \\
+            {\bf Complete-Link} & $\{1,2\}$ & $\{3,4,5,6,7,15,16,17,18,19,20,21\}$ & $\{8 \cdots 14\}$ \\ \hline
+          \end{tabular}
+          \caption{
+            Hierarchical Agglomerative Clustering. See \autoref{lst:hierarchical} \\
+            for a fuller explanation on how these clusters have been obtained.
+          }
+          \label{tbl:hierarchical}
+        \end{table}
+
+        Pictorially, \autoref{tbl:hierarchical} translates to the following plots:
+        \begin{figure}[H]
+          \centering
+          \begin{subfigure}[b]{0.43\linewidth}
+            \begin{tikzpicture}
+              \begin{axis}[
+                width={\linewidth},
+                legend pos={north east},
+                only marks,
+                mark size=3pt,
+                cycle list={
+                  {draw=red!90!black, mark=+},
+                  {draw=blue!90!black, mark=-},
+                  {draw=green!60!black, mark=x}
+                }
+              ]
+                \pgfplotsinvokeforeach{1,2,3}{
+                  \addplot+ table[col sep=comma] {dev-dir/week4/data/hierarchical/s-link-cluster-#1.csv};
+                  \addlegendentry{Cluster #1};
+                }
+              \end{axis}
+            \end{tikzpicture}
+            \caption{Single Linkage Hierarchical Clustering.}
+          \end{subfigure}
+          \begin{subfigure}[b]{0.43\linewidth}
+            \begin{tikzpicture}
+              \begin{axis}[
+                width={\linewidth},
+                legend pos={north east},
+                only marks,
+                mark size=3pt,
+                cycle list={
+                  {draw=red!90!black, mark=+},
+                  {draw=blue!90!black, mark=-},
+                  {draw=green!60!black, mark=x}
+                }
+              ]
+                \pgfplotsinvokeforeach{1,2,3}{
+                  \addplot+ table[col sep=comma] {dev-dir/week4/data/hierarchical/c-link-cluster-#1.csv};
+                  \addlegendentry{Cluster #1};
+                }
+              \end{axis}
+            \end{tikzpicture}
+            \caption{Complete Linkage Hierarchical Clustering.}
+          \end{subfigure}
+        \end{figure}
+
+      \item \label{qst:1B}
+        Below is an implementation of {\sf AgglomerativeClustering} in {\sf scikit-learn}:
+        \lstinputlisting
+          [caption={\sf hierarchical-scikit.py}, label={lst:hierarchical-scikit}]
+          {dev-dir/week4/hierarchical-scikit.py}
+
+      \item \label{qst:1C}
+        The corresponding dendrograms are plotted below.
+        \begin{figure}[H]
+          \centering
+          \begin{subfigure}[b]{0.43\linewidth}
+            \includegraphics[scale=0.4]{dev-dir/week4/figs/dendrogram-single.pdf}
+            \caption{Single Linkage Hierarchical Clustering.}
+          \end{subfigure}
+          \begin{subfigure}[b]{0.43\linewidth}
+            \includegraphics[scale=0.4]{dev-dir/week4/figs/dendrogram-complete.pdf}
+            \caption{Complete Linkage Hierarchical Clustering.}
+          \end{subfigure}
+          \caption{
+            Hierarchical Clustering Dendrograms. See \autoref{lst:hierarchical-dendrogram} \\
+            for a fuller explanation on how these dendrograms have been generated.
+          }
+        \end{figure}
+    \end{enumerate}
+
+  \item \label{qst:2}
+    \begin{enumerate}[label={(\Alph*)}, ref={\theenumi(\Alph*)}]
+      \item \label{qst:2A}
+        \begin{enumerate}[label={(\roman*)}, ref={\theenumii(\roman*)}]
+          \item
+            Below is a plot corresponding to the resulting output of a fully-fledge vanilla
+            implementation of {\sf Gonzalez} and {\sf Kmeans{\tt++}} clustering algorithms
+            on {\sf C2.txt} dataset.
+            \begin{figure}[H]
+              \centering
+              \begin{subfigure}[b]{0.43\linewidth}
+                \begin{tikzpicture}
+                  \begin{axis}[
+                    width={\linewidth},
+                    legend pos={north east},
+                    legend entries={Cluster 1, Cluster 2, Cluster 3, Cluster 4},
+                    point meta={explicit},
+                    mark size={1.5pt},
+                    only marks,
+                  ]
+                    \addplot [
+                      scatter,
+                      scatter/classes={
+                        0={fill={cluster1}, draw={cluster1!80!black}},
+                        1={fill={cluster2}, draw={cluster2!80!black}},
+                        2={fill={cluster3}, draw={cluster3!80!black}},
+                        3={fill={cluster4}, draw={cluster4!80!black}}
+                      },
+                    ] table[col sep=comma, x index=0, y index=1, meta index=2] {dev-dir/week4/data/gonzalez/points.csv};
+                    \addplot [
+                      mark=x,
+                      mark size=5pt,
+                      color=red
+                    ] table[col sep=comma] {dev-dir/week4/data/gonzalez/centers.csv};
+                  \end{axis}
+                \end{tikzpicture}
+                \caption{{\sf Gonzalez} Clustering Algorithm.}
+              \end{subfigure}
+              \begin{subfigure}[b]{0.43\linewidth}
+                \begin{tikzpicture}
+                  \begin{axis}[
+                    width={\linewidth},
+                    legend pos={north east},
+                    legend entries={Cluster 1, Cluster 2, Cluster 3, Cluster 4},
+                    point meta={explicit},
+                    mark size={1.5pt},
+                    only marks,
+                  ]
+                    \addplot [
+                      scatter,
+                      scatter/classes={
+                        0={fill={cluster1}, draw={cluster1!80!black}},
+                        1={fill={cluster2}, draw={cluster2!80!black}},
+                        2={fill={cluster3}, draw={cluster3!80!black}},
+                        3={fill={cluster4}, draw={cluster4!80!black}}
+                      },
+                    ] table[col sep=comma, x index=0, y index=1, meta index=2] {dev-dir/week4/data/kplusplus/points.csv};
+                    \addplot [
+                      mark=x,
+                      mark size=5pt,
+                      color=red
+                    ] table[col sep=comma] {dev-dir/week4/data/kplusplus/centers.csv};
+                  \end{axis}
+                \end{tikzpicture}
+                \caption{{\sf Kmeans{\tt++}} Clustering Algorithm.}
+              \end{subfigure}
+              \caption{
+                {\sf Gonzalez} and {\sf Kmeans{\tt++}} clustering algorithms on {\sf C2.txt}
+                dataset. Please refer to \\ \autoref{lst:gonzalez} and \ref{lst:kplusplus} for
+                a fuller explanation on how these figures have been generated.
+              }
+            \end{figure}
+
+          \item
+            The following $4$-center costs were obtained during the run:
+            \begin{table}[H]
+              \centering
+              \begin{tabular}{|c|c|c|}
+                \hline
+                & {\sf Gonzalez} & {\sf Kmeans{\tt++}} \\ \hline
+                {\sf 4-Center Cost} & {\bf 3.481123664686921} & {\bf 11.348260306157117} \\ \hline
+              \end{tabular}
+              \caption{4-center cost.}
+            \end{table}
+
+          \item
+            The following $4$-means costs were obtained during the run:
+            \begin{table}[H]
+              \centering
+              \begin{tabular}{|c|c|c|}
+                \hline
+                & {\sf Gonzalez} & {\sf Kmeans{\tt++}} \\ \hline
+                {\sf 4-Means Cost} & {\bf 1.6005365908052087} & {\bf 1.0416802543222048} \\ \hline
+              \end{tabular}
+              \caption{4-means cost.}
+            \end{table}
+        \end{enumerate}
+
+      \item \label{qst:2B}
+        \begin{enumerate}[label={(\roman*)}, ref={\theenumii(\roman*)}]
+          \item
+            The cumulative density function of the 4-means cost associated with the
+            {\sf KMeans{\tt++}} algorithm is plotted below.
+            \begin{figure}[H]
+              \centering
+              \begin{tikzpicture}
+                \begin{axis}[
+                  xlabel={4-Means Cost},
+                  ylabel={Likelihood of Occurrence},
+                ]
+                  \addplot [
+                    thick,
+                    color=red,
+                    hist={data=x, bins=100, handler/.style={const plot}, cumulative, density}
+                  ] file {dev-dir/week4/data/kplusplus/kplusplus-cdf.csv};
+                  \addlegendentry{CDF};
+                \end{axis}
+              \end{tikzpicture}
+              \caption{
+                4-Means Cost CDF Plot of {\sf KMeans{\tt++}} Algorithm.
+              }
+              \label{fig:4-means-cost-kmeans-cdf-plot}
+            \end{figure}
+
+          \item
+            A total of $0 / 100 = 0.0$ of the trials, the subsets from {\sf Kmeans{\tt++}} and
+            {\sf Gonzalez} matched within an error tolerance $\varepsilon < 0.01$. Please refer
+            to \autoref{lst:kplusplus-cdf} for a fuller explanation on how this fractional value
+            was obtained.
+        \end{enumerate}
+
+      \item \label{qst:2C}
+        \begin{enumerate}[label={(\roman*)}, ref={\theenumii(\roman*)}]
+          \item
+            Below is the output of {\sf Lloyd}'s algorithm with centroids initially set as the
+            points indexed $\{1,2,3,4\}$ in the {\sf C2.txt} dataset. A 4-means cost of
+            approximately {\bf 0.8532158400114525} was obtained during the run.
+            \begin{figure}[H]
+              \centering
+              \begin{tikzpicture}
+                \begin{axis}[
+                  legend pos={north east},
+                  legend entries={Cluster 1, Cluster 2, Cluster 3, Cluster 4},
+                  point meta={explicit},
+                  mark size={1.5pt},
+                  only marks,
+                ]
+                  \addplot [
+                    scatter,
+                    scatter/classes={
+                      0={fill={cluster1}, draw={cluster1!80!black}},
+                      1={fill={cluster2}, draw={cluster2!80!black}},
+                      2={fill={cluster3}, draw={cluster3!80!black}},
+                      3={fill={cluster4}, draw={cluster4!80!black}}
+                    },
+                  ] table[col sep=comma, x index=0, y index=1, meta index=2] {dev-dir/week4/data/lloyd/points-lloyd.csv};
+                  \addplot [
+                    mark=x,
+                    mark size=5pt,
+                    color=red
+                  ] table[col sep=comma] {dev-dir/week4/data/lloyd/centers-lloyd.csv};
+                \end{axis}
+              \end{tikzpicture}
+              \caption{
+                {\sf Lloyd}'s algorithm with centroids initially set as the points indexed at
+                $\{1,2,3,4\}$ on {\sf C2.txt} dataset. Please refer to \autoref{lst:lloyd} for
+                a fuller explanation on how this plot was generated.
+              }
+              \label{fig:lloyd}
+            \end{figure}
+
+          \item
+            Below is the output of {\sf Lloyd}'s algorithm with centroids initially set as the
+            output {\sf Gonzalez}'s subroutine. The run incurred a 4-means cost of approximately
+            {\bf 0.8769132227723297}.
+            \begin{figure}[H]
+              \centering
+              \begin{tikzpicture}
+                \begin{axis}[
+                  legend pos={north east},
+                  legend entries={Cluster 1, Cluster 2, Cluster 3, Cluster 4},
+                  point meta={explicit},
+                  mark size={1.5pt},
+                  only marks,
+                ]
+                  \addplot [
+                    scatter,
+                    scatter/classes={
+                      0={fill={cluster1}, draw={cluster1!80!black}},
+                      1={fill={cluster2}, draw={cluster2!80!black}},
+                      2={fill={cluster3}, draw={cluster3!80!black}},
+                      3={fill={cluster4}, draw={cluster4!80!black}}
+                    },
+                  ] table[col sep=comma, x index=0, y index=1, meta index=2] {dev-dir/week4/data/lloyd/points-gonzalez.csv};
+                  \addplot [
+                    mark=x,
+                    mark size=5pt,
+                    color=red
+                  ] table[col sep=comma] {dev-dir/week4/data/lloyd/centers-gonzalez.csv};
+                \end{axis}
+              \end{tikzpicture}
+              \caption{
+                {\sf Lloyd}'s algorithm with centroids initially set as the output of {\sf Gonzalez}'s
+                subroutine. Please refer to \autoref{lst:lloyd} for a fuller explanation on how this
+                plot has been generated.
+              }
+              \label{fig:lloyd-gonzalez}
+            \end{figure}
+
+          \item
+            The cumulative density function of the 4-means cost associated with a vanilla
+            implementation of {\sf Lloyd}'s algorithm (found in \autoref{lst:lloyd-cdf})
+            is plotted below.
+            \begin{figure}[H]
+              \centering
+              \begin{tikzpicture}
+                \begin{axis}[
+                  xlabel={4-Means Cost},
+                  ylabel={Likelihood of Occurrence},
+                ]
+                  \addplot [
+                    thick,
+                    color=red,
+                    hist={data=x, bins=100, handler/.style={const plot}, cumulative, density}
+                  ] file {dev-dir/week4/data/lloyd/lloyd-cdf.csv};
+                  \addlegendentry{CDF};
+                \end{axis}
+              \end{tikzpicture}
+              \caption{
+                4-Means Cost CDF Plot of {\sf Lloyd}'s Algorithm. (Vanilla Implementation).
+              }
+              \label{fig:4-means-cost-lloyd-kmeans-cdf-plot}
+            \end{figure}
+            A total of 0/100 = 0.0 of the trials, the subsets from {\sf Kmeans{\tt++}} and
+            {\sf Lloyd} matched within an error tolerance $\varepsilon < 0.01$. Please refer
+            to \autoref{lst:lloyd-cdf} for a fuller explanation on how this fractional value
+            was obtained.
+        \end{enumerate}
+
+      \item \label{qst:2D}
+        The cumulative density function of the 4-means cost associated with a {\sf scikit-learn}
+        implementation of {\sf Lloyd}'s algorithm (found in \autoref{lst:lloyd-scikit-cdf})
+        is plotted below.
+        \begin{figure}[H]
+          \centering
+          \begin{tikzpicture}
+            \begin{axis}[
+              xlabel={4-Means Cost},
+              ylabel={Likelihood of Occurrence},
+            ]
+              \addplot [
+                thick,
+                color=red,
+                hist={data=x, bins=100, handler/.style={const plot}, cumulative, density}
+              ] file {dev-dir/week4/data/lloyd/lloyd-scikit-cdf.csv};
+              \addlegendentry{CDF};
+            \end{axis}
+          \end{tikzpicture}
+          \caption{
+            4-Means Cost CDF Plot of {\sf Lloyid}'s Algorithm. \\ (Scikit-Learn Implementation).
+          }
+          \label{fig:4-means-cost-lloyd-kmeans-cdf-plot}
+        \end{figure}
+        A total of 0/100 = 0.0 of the trials, the subsets from {\sf Kmeans{\tt++}} and {\sf Lloyd}
+        matched within an error tolerance $\varepsilon < 0.01$. Please refer to
+        \autoref{lst:lloyd-scikit-cdf} for a fuller explanation on how this fractional value was
+        obtained.
+
+        \lstinputlisting
+          [caption={\sf lloyd-scikit-cdf.py}, label={lst:lloyd-scikit-cdf}]
+          {dev-dir/week4/lloyd-scikit-cdf.py}
+    \end{enumerate}
+
+  \item \label{qst:3}
+    Please refer to \autoref{lst:kmedians} for a fuller explanation on how the following centers
+    have been generated. A cost of {\bf 0.4194209920788438} was obtained during the run. The
+    associated {\sf .txt} file has been uploaded onto google drive under the alias {\tt\color{blue}
+    u1419667-best-centers.txt}. \\ \bigskip
+
+    \lstinputlisting
+      [caption={\sf u1419667-best-centers.txt}, label={lst:u1419667-best-centers}]
+      {dev-dir/week4/data/kmedians/best-centers.txt}
+\end{enumerate}
+
+\newpage
+
+\section*{Appendix}
+
+\lstinputlisting
+  [caption={\sf hierarchical.py}, label={lst:hierarchical}]
+  {dev-dir/week4/hierarchical.py}
+  
+\newpage
+
+\lstinputlisting
+  [caption={\sf hierarchical-dendrogram.py}, label={lst:hierarchical-dendrogram}]
+  {dev-dir/week4/hierarchical-dendrogram.py}
+  
+\newpage
+
+\lstinputlisting
+  [caption={\sf gonzalez.py}, label={lst:gonzalez}]
+  {dev-dir/week4/gonzalez.py}
+  
+\newpage
+
+\lstinputlisting
+  [caption={\sf kplusplus.py}, label={lst:kplusplus}]
+  {dev-dir/week4/kplusplus.py}
+  
+\newpage
+
+\lstinputlisting
+  [caption={\sf kplusplus-cdf.py}, label={lst:kplusplus-cdf}]
+  {dev-dir/week4/kplusplus-cdf.py}
+  
+\newpage
+
+\lstinputlisting
+  [caption={\sf lloyd.py}, label={lst:lloyd}]
+  {dev-dir/week4/lloyd.py}
+  
+\newpage
+
+\lstinputlisting
+  [caption={\sf lloyd-cdf.py}, label={lst:lloyd-cdf}]
+  {dev-dir/week4/lloyd-cdf.py}
+  
+\newpage
+
+\lstinputlisting
+  [caption={\sf kmedians.py}, label={lst:kmedians}]
+  {dev-dir/week4/kmedians.py}
+\end{document}
